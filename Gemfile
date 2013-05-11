@@ -11,7 +11,7 @@ group :development do
   gem 'binding_of_caller'
   gem 'meta_request'
   gem 'guard-rspec'
-  gem 'genghis'
+  # gem 'genghis'
 end
 
 
@@ -25,6 +25,9 @@ group :assets do
   # gem 'therubyracer', :platforms => :ruby
 
   gem 'uglifier', '>= 1.0.3'
+
+  # gem 'compass-rails'
+  gem 'zurb-foundation'
 end
 
 gem 'jquery-rails'
