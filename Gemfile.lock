@@ -90,6 +90,7 @@ GEM
     mono_logger (1.0.1)
     moped (1.4.5)
     multi_json (1.7.3)
+    nokogiri (1.5.9)
     origin (1.1.0)
     polyglot (0.3.3)
     pry (0.9.12.1)
@@ -189,6 +190,7 @@ DEPENDENCIES
   jquery-rails
   meta_request
   mongoid
+  nokogiri
   rabl
   rails (= 3.2.13)
   resque
