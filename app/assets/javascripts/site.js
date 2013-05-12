@@ -65,25 +65,98 @@
 
 //Polymaps example
 
-var styleId = 998;
-var styleId = 999; // Midnight commander
-// var styleId = 20760; // Grey
+// var styleId = 998;
+// var styleId = 999; // Midnight commander
+// // var styleId = 20760; // Grey
 
-var po = org.polymaps;
+// var po = org.polymaps;
 
-var map = po.map()
-    // .container(document.getElementById("map").appendChild(po.svg("svg")))
-    .container(d3.select("#map").append("svg:svg").node())
-    .add(po.interact())
-    .add(po.hash());
-
-
-map.add(po.image()
-    .url(po.url("http://{S}tile.cloudmade.com"
-    + "/1479bc84eb4447488feb7261292df9f7" // http://cloudmade.com/register
-    + "/"+styleId+"/256/{Z}/{X}/{Y}.png")
-    .hosts(["a.", "b.", "c.", ""])));
+// var map = po.map()
+//     // .container(document.getElementById("map").appendChild(po.svg("svg")))
+//     .container(d3.select("#map").append("svg:svg").node())
+//     .add(po.interact())
+//     .add(po.hash());
 
 
-map.add(po.compass()
-    .pan("none"));
+// map.add(po.image()
+//     .url(po.url("http://{S}tile.cloudmade.com"
+//     + "/API KEY" // http://cloudmade.com/register
+//     + "/"+styleId+"/256/{Z}/{X}/{Y}.png")
+//     .hosts(["a.", "b.", "c.", ""])));
+
+
+// map.add(po.compass()
+//     .pan("none"));
+
+
+// Pure d3 example
+
+var width = Math.max(960, window.innerWidth),
+    height = Math.max(500, window.innerHeight);
+
+var tile = d3.geo.tile()
+    .size([width, height]);
+
+var projection = d3.geo.mercator()
+    .scale((1 << 20) / 2.0 / Math.PI)
+    .translate([width / 2, height / 2]);
+
+var center = projection([-0.09, 51.505]);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var zoom = d3.behavior.zoom()
+    .scale(projection.scale() * 2 * Math.PI)
+    .scaleExtent([1 << 11, 1 << 25])
+    .translate([width - center[0], height - center[1]])
+    .on("zoom", zoomed);
+
+var svg = d3.select("#map").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var raster = svg.append("g");
+
+var vector = svg.append("path");
+
+// d3.json("/d/4090846/us.json", function(error, us) {
+   svg.call(zoom);
+   // vector.datum(topojson.mesh(us, us.objects.states));
+   zoomed();
+// });
+
+function zoomed() {
+  var tiles = tile
+      .scale(zoom.scale())
+      .translate(zoom.translate())
+      ();
+
+  projection
+      .scale(zoom.scale() / 2 / Math.PI)
+      .translate(zoom.translate());
+
+  vector
+      .attr("d", path);
+
+  var image = raster
+      .attr("transform", "scale(" + tiles.scale + ")translate(" + tiles.translate + ")")
+    .selectAll("image")
+      .data(tiles, function(d) { return d; });
+
+  image.exit()
+      .remove();
+
+  image.enter().append("image")
+      .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+      // .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+      // .attr("xlink:href", function(d) { return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+      // .attr("xlink:href", function(d) { return "http://a.tile.cloudmade.com/API KEY HERE/998/256/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+      .attr("width", 1)
+      .attr("height", 1)
+      .attr("x", function(d) { return d[0]; })
+      .attr("y", function(d) { return d[1]; });
+}
+
+
+
