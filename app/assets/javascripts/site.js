@@ -27,10 +27,13 @@ var map = L.map('map').setView([51.505, -0.09], 13);
 
 // Stamen tiles
 
-L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {
-    attribution: '<a href="http://content.stamen.com/dotspotting_toner_cartography_available_for_download">Stamen Toner</a>, <a href="http://www.openstreetmap.org/">OpenStreetMap</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-    maxZoom: 17
-}).addTo(map);
+// toner, watercolor, terrain
+
+// L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {
+//     attribution: '<a href="http://content.stamen.com/dotspotting_toner_cartography_available_for_download">Stamen Toner</a>, <a href="http://www.openstreetmap.org/">OpenStreetMap</a>, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+//     maxZoom: 17
+// }).addTo(map);
+
 
 
 var marker = L.marker([51.5, -0.09]).addTo(map);
