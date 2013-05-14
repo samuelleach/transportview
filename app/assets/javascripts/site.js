@@ -124,13 +124,17 @@ var svg = d3.select("#map").append("svg")
 var raster = svg.append("g");
 var vector = svg.append("path");
 
-d3.csv("cities.csv", function(error, data) {
+// d3.csv("cities.csv", function(error, data) {
+d3.json("tfl_stationlocations.geo.json", function(error, data) {
+  data = data.features;
   markers = svg.selectAll("circle")
                     .data(data)
                     .enter()
                     .append("circle")
                     .attr("r", 5)
-                    .style("fill", "red");
+                    .style("fill", "red")
+                    .attr("stroke","white")
+                    .attr("stroke-width",2);
 
   svg.call(zoom);
   redraw();
@@ -162,10 +166,12 @@ function redraw() {
 
   markers
      .attr("cx", function(d) {
-             return projection([d.lon, d.lat])[0];
+             // return projection([d.lon, d.lat])[0];
+             return projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0];
      })
      .attr("cy", function(d) {
-             return projection([d.lon, d.lat])[1];
+             // return projection([d.lon, d.lat])[1];
+             return projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1];
      });
 
 
