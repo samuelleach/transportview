@@ -101,7 +101,9 @@ var projection = d3.geo.mercator()
        .translate([width / 2, height / 2])
        .scale((1 << 20) / 2.0 / Math.PI);
 
-var center = projection([-0.09, 51.505]);
+var london_coord = [-0.09, 51.505];
+
+var center = projection(london_coord);
 
 var path = d3.geo.path()
     .projection(projection);
@@ -117,15 +119,21 @@ var svg = d3.select("#map").append("svg")
     .attr("height", height);
 
 var raster = svg.append("g");
-
 var vector = svg.append("path");
 
-var marker = svg.append("circle")
+d3.csv("cities.csv", function(error, data) {
+  markers = svg.selectAll("circle")
+                    .data(data)
+                    .enter()
+                    .append("circle")
+                    .attr("r", 5)
+                    .style("fill", "red");
 
-var london_coord = [-0.09, 51.505];
+  svg.call(zoom);
+  redraw();
+});
 
-svg.call(zoom);
-redraw();
+
 
 
 function redraw() {
@@ -149,20 +157,20 @@ function redraw() {
   image.exit()
       .remove();
 
+  markers
+     .attr("cx", function(d) {
+             return projection([d.lon, d.lat])[0];
+     })
+     .attr("cy", function(d) {
+             return projection([d.lon, d.lat])[1];
+     });
 
-  coords = projection(london_coord);
-
-  marker
-        .attr('cx', coords[0])
-        .attr('cy', coords[1])
-        .attr('r', 5)
-        .style('fill', 'red');
 
 
   image.enter().append("image")
     //  .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-      .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-      // .attr("xlink:href", function(d) { return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+      // .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+      .attr("xlink:href", function(d) { return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       // .attr("xlink:href", function(d) { return "http://a.tile.cloudmade.com/API KEY HERE/998/256/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       .attr("width", 1)
       .attr("height", 1)
