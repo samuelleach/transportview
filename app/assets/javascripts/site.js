@@ -91,8 +91,11 @@
 
 // Pure d3 example
 
-var width = Math.max(960, window.innerWidth),
+var width = Math.max(800, window.innerWidth),
     height = Math.max(500, window.innerHeight);
+
+var width = 965, 
+    height = 490;
 
 var tile = d3.geo.tile()
     .size([width, height]);
