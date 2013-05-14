@@ -98,8 +98,8 @@ var tile = d3.geo.tile()
     .size([width, height]);
 
 var projection = d3.geo.mercator()
-    .scale((1 << 20) / 2.0 / Math.PI)
-    .translate([width / 2, height / 2]);
+       .translate([width / 2, height / 2])
+       .scale((1 << 20) / 2.0 / Math.PI);
 
 var center = projection([-0.09, 51.505]);
 
@@ -110,7 +110,7 @@ var zoom = d3.behavior.zoom()
     .scale(projection.scale() * 2 * Math.PI)
     .scaleExtent([1 << 11, 1 << 25])
     .translate([width - center[0], height - center[1]])
-    .on("zoom", zoomed);
+    .on("zoom", redraw);
 
 var svg = d3.select("#map").append("svg")
     .attr("width", width)
@@ -120,13 +120,15 @@ var raster = svg.append("g");
 
 var vector = svg.append("path");
 
-// d3.json("/d/4090846/us.json", function(error, us) {
-   svg.call(zoom);
-   // vector.datum(topojson.mesh(us, us.objects.states));
-   zoomed();
-// });
+var marker = svg.append("circle")
 
-function zoomed() {
+var london_coord = [-0.09, 51.505];
+
+svg.call(zoom);
+redraw();
+
+
+function redraw() {
   var tiles = tile
       .scale(zoom.scale())
       .translate(zoom.translate())
@@ -147,15 +149,26 @@ function zoomed() {
   image.exit()
       .remove();
 
+
+  coords = projection(london_coord);
+
+  marker
+        .attr('cx', coords[0])
+        .attr('cy', coords[1])
+        .attr('r', 5)
+        .style('fill', 'red');
+
+
   image.enter().append("image")
-      .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-      // .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+    //  .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+      .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       // .attr("xlink:href", function(d) { return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       // .attr("xlink:href", function(d) { return "http://a.tile.cloudmade.com/API KEY HERE/998/256/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       .attr("width", 1)
       .attr("height", 1)
       .attr("x", function(d) { return d[0]; })
       .attr("y", function(d) { return d[1]; });
+
 }
 
 
