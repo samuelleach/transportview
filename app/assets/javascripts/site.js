@@ -91,11 +91,9 @@
 
 // Pure d3 example
 
-var width = Math.max(800, window.innerWidth),
-    height = Math.max(500, window.innerHeight);
 
-var width = 965, 
-    height = 490;
+var width = self.innerWidth, 
+    height = 500;
 
 var tile = d3.geo.tile()
     .size([width, height]);
@@ -118,15 +116,20 @@ var zoom = d3.behavior.zoom()
     .on("zoom", redraw);
 
 var svg = d3.select("#map").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+            .attr("height", height);
+            // .attr("width", width);
+     
 
 var raster = svg.append("g");
 var vector = svg.append("path");
 
-// d3.csv("cities.csv", function(error, data) {
-d3.json("tfl_stationlocations.geo.json", function(error, data) {
-  data = data.features;
+// d3.csv("data/cities.csv", function(error, data) {
+
+d3.xml("data/stream.xml", "application/xml", function(error, xml) {
+  data = $.xml2json(xml).Disruptions.Disruption;
+
+// d3.json("data/tfl_stationlocations.geo.json", function(error, data) {
+//   data = data.features;
   markers = svg.selectAll("circle")
                     .data(data)
                     .enter()
@@ -166,12 +169,14 @@ function redraw() {
 
   markers
      .attr("cx", function(d) {
-             // return projection([d.lon, d.lat])[0];
-             return projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[0];
+             // return projection([d.lon, d.lat])[0]; // My CSV version
+             // return projection(d.geometry.coordinates)[0];
+             return projection(d.CauseArea.DisplayPoint.Point.coordinatesLL.split(','))[0];
      })
      .attr("cy", function(d) {
              // return projection([d.lon, d.lat])[1];
-             return projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1];
+             // return projection(d.geometry.coordinates)[1];
+             return projection(d.CauseArea.DisplayPoint.Point.coordinatesLL.split(','))[1];
      });
 
 
