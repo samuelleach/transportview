@@ -123,13 +123,25 @@ var svg = d3.select("#map").append("svg")
 var raster = svg.append("g");
 var vector = svg.append("path");
 
+// function lonlat(d) {
+//     return [d.lon, d.lat];
+// }
 // d3.csv("data/cities.csv", function(error, data) {
 
-d3.xml("data/stream.xml", "application/xml", function(error, xml) {
-  data = $.xml2json(xml).Disruptions.Disruption;
 
-// d3.json("data/tfl_stationlocations.geo.json", function(error, data) {
-//   data = data.features;
+// function lonlat(d) {
+//     return d.CauseArea.DisplayPoint.Point.coordinatesLL.split(',');
+// }
+// d3.xml("data/stream.xml", "application/xml", function(error, xml) {
+//   data = $.xml2json(xml).Disruptions.Disruption;
+
+
+function lonlat(d) {
+    return d.geometry.coordinates;
+}
+d3.json("data/tfl_stationlocations.geo.json", function(error, data) {
+  data = data.features;
+
   markers = svg.selectAll("circle")
                     .data(data)
                     .enter()
@@ -169,17 +181,11 @@ function redraw() {
 
   markers
      .attr("cx", function(d) {
-             // return projection([d.lon, d.lat])[0]; // My CSV version
-             // return projection(d.geometry.coordinates)[0];
-             return projection(d.CauseArea.DisplayPoint.Point.coordinatesLL.split(','))[0];
+             return projection(lonlat(d))[0];
      })
      .attr("cy", function(d) {
-             // return projection([d.lon, d.lat])[1];
-             // return projection(d.geometry.coordinates)[1];
-             return projection(d.CauseArea.DisplayPoint.Point.coordinatesLL.split(','))[1];
+             return projection(lonlat(d))[1];
      });
-
-
 
   image.enter().append("image")
     //  .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
