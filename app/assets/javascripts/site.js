@@ -118,7 +118,8 @@ var zoom = d3.behavior.zoom()
 var svg = d3.select("#map").append("svg")
             .attr("height", height);
             // .attr("width", width);
-     
+
+var messageboard = d3.select("#messageboard");
 
 var raster = svg.append("g");
 var vector = svg.append("path");
@@ -135,6 +136,15 @@ function lonlat(d) {
 d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   data = $.xml2json(xml).Disruptions.Disruption;
   console.log(data);
+
+  // Crossfilter tests
+  xf = crossfilter();
+  xf.add(data);
+  var categories = xf.dimension(function(d) { return d.category; });
+  categoryGroup = categories.group().all().sort(function(a,b) {
+      return a.value < b.value ? 1 : -1;
+  });
+  console.log(categoryGroup);
 
 
 // function lonlat(d) {
@@ -154,10 +164,28 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
 
   svg.call(zoom);
   redraw();
+  renderMessageBoard();
 });
 
 
 
+function renderMessageBoard() {
+   var categorySel = messageboard.selectAll("g.category")
+                                .data(categoryGroup);
+
+   categorySel.exit().remove();
+
+   var categoryEnter = categorySel.enter()
+                                  .append("g")
+                                  .classed("category", true);
+
+   categoryEnter.append("text").classed("name", true);
+
+
+   categorySel.select("text.name")
+              .text(function(d) { return d.key+' '+ d.value + '; ' });
+
+}
 
 function redraw() {
   var tiles = tile
