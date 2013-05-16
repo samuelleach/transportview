@@ -129,18 +129,19 @@ var vector = svg.append("path");
 // d3.csv("data/cities.csv", function(error, data) {
 
 
-// function lonlat(d) {
-//     return d.CauseArea.DisplayPoint.Point.coordinatesLL.split(',');
-// }
-// d3.xml("data/stream.xml", "application/xml", function(error, xml) {
-//   data = $.xml2json(xml).Disruptions.Disruption;
-
-
 function lonlat(d) {
-    return d.geometry.coordinates;
+    return d.CauseArea.DisplayPoint.Point.coordinatesLL.split(',');
 }
-d3.json("data/tfl_stationlocations.geo.json", function(error, data) {
-  data = data.features;
+d3.xml("data/stream.xml", "application/xml", function(error, xml) {
+  data = $.xml2json(xml).Disruptions.Disruption;
+  console.log(data);
+
+
+// function lonlat(d) {
+//     return d.geometry.coordinates;
+// }
+// d3.json("data/tfl_stationlocations.geo.json", function(error, data) {
+//   data = data.features;
 
   markers = svg.selectAll("circle")
                     .data(data)
