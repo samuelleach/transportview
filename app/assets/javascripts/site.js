@@ -149,65 +149,84 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   //   category: xf.dimension(function(d) { return d.category; })
   // }
 
-  var disruptionsByCategory = disruptions.dimension(function(d) { return d.category; });
+  disruptionsByCategory = disruptions.dimension(function(d) { return d.category; });
 
   // Sort category groups by number
   topCategories = disruptionsByCategory.group().top(Infinity);
 
-  categoryKeys = _.pluck(topCategories,'key');
+  markersSel = svg.selectAll("circle");
 
-  var allDisruptions = disruptionsByCategory.top(Infinity);
+  markersSelData = markersSel
+                    .data(data);
 
-  markers = svg.selectAll("circle")
-                    .data(data)
-                    // .data(allDisruptions)
+  markers = markersSelData
                     .enter()
                     .append("circle")
-                    .attr("r", 5);
+                    .attr("r", 5);                  
 
   svg.call(zoom);
   redrawMap();
 
   // Dropdown menu
-  var select = messageboard.append('select');
+  var dropdown = messageboard.append('select');
 
-  select.selectAll("option")
+  categoryKeys = _.pluck(topCategories,'key');
+
+
+  dropdown.selectAll("option")
           .data(categoryKeys)
           .enter()
           .append("option")
           .attr("value", function(d) { return d })
           .text(function(d) { return d });
 
-  select.on("change", function() {
-      var categoryValue = categoryKeys[this.selectedIndex];
-      console.log(categoryValue);
-      // updateXF(categoryValue);
+  dropdown.on("change", function() {
+      var categoryKey = categoryKeys[this.selectedIndex];
+      console.log(categoryKey);
+      updateFilter(categoryKey);
   })
 
-  renderMessageBoard();
+  messageboardSel = messageboard.selectAll("g.category")
+                                  .data(topCategories);
+
+  redrawMessageBoard();
 
 });
 
-function updateFilter(categoryValue) {
-    disruptionsByCategory.filter(categoryValue);
+function updateFilter(categoryKey) {
+    disruptionsByCategory.filter(categoryKey);
+
+
+    markersSelData
+          .remove();
+
+    allDisruptions = disruptionsByCategory.top(Infinity);
+
+    markersSelData = markersSel
+                    .data(allDisruptions);
+
+    markers = markersSelData
+                      .enter()
+                      .append("circle")
+                      .attr("r", 5);
+
+
+    redrawMap();
 }
 
 
 
-function renderMessageBoard() {
-   var categorySel = messageboard.selectAll("g.category")
-                                .data(topCategories);
+function redrawMessageBoard() {
+   messageboardSel.exit().remove();
 
-   categorySel.exit().remove();
-
-   var categoryEnter = categorySel.enter()
+   var messageboardEnter = messageboardSel.enter()
                                   .append("g")
                                   .classed("category", true);
 
-   categoryEnter.append("text").classed("name", true);
+   messageboardEnter.append("text").classed("name", true);
 
 
-   categorySel.select("text.name")
+   messageboardSel.select("text.name")
               .text(function(d) { return d.key+' '+ d.value + '; ' });
 
 }
