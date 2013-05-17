@@ -91,7 +91,6 @@
 
 // Pure d3 example
 
-
 var width = self.innerWidth, 
     height = 500;
 
@@ -121,6 +120,7 @@ var svg = d3.select("#map").append("svg")
 
 var messageboard = d3.select("#messageboard");
 
+
 var raster = svg.append("g");
 var vector = svg.append("path");
 
@@ -129,6 +129,11 @@ var vector = svg.append("path");
 // }
 // d3.csv("data/cities.csv", function(error, data) {
 
+// function lonlat(d) {
+//     return d.geometry.coordinates;
+// }
+// d3.json("data/tfl_stationlocations.geo.json", function(error, data) {
+//   data = data.features;
 
 function lonlat(d) {
     return d.CauseArea.DisplayPoint.Point.coordinatesLL.split(',');
@@ -138,20 +143,23 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   console.log(data);
 
   // Crossfilter tests
-  xf = crossfilter();
-  xf.add(data);
-  var categories = xf.dimension(function(d) { return d.category; });
-  categoryGroup = categories.group().all().sort(function(a,b) {
+  disruptionEvents = crossfilter(data);
+  console.log(JSON.stringify(data));
+  // xf.add(data);
+
+
+  // var dims ={
+  //   category: xf.dimension(function(d) { return d.category; })
+  // }
+
+  var category = disruptionEvents.dimension(function(d) { return d.category; });
+
+  // Sort category groups by number
+  categoryGroup = category.group().all().sort(function(a,b) {
       return a.value < b.value ? 1 : -1;
   });
-  console.log(categoryGroup);
 
-
-// function lonlat(d) {
-//     return d.geometry.coordinates;
-// }
-// d3.json("data/tfl_stationlocations.geo.json", function(error, data) {
-//   data = data.features;
+  categoryKeys = _.pluck(categoryGroup,'key');
 
   markers = svg.selectAll("circle")
                     .data(data)
@@ -164,9 +172,25 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
 
   svg.call(zoom);
   redraw();
-  renderMessageBoard();
-});
 
+  // Dropdown menu
+  var select = messageboard.append('select');
+
+  select.selectAll("option")
+          .data(categoryKeys)
+          .enter()
+          .append("option")
+          .attr("value", function(d) { return d })
+          .text(function(d) { return d });
+
+  select.on("change", function() {
+      var categoryValue = categoryKeys[this.selectedIndex];
+      // updateXF(categoryValue);
+  })
+
+  renderMessageBoard();
+
+});
 
 
 function renderMessageBoard() {
@@ -190,8 +214,7 @@ function renderMessageBoard() {
 function redraw() {
   var tiles = tile
       .scale(zoom.scale())
-      .translate(zoom.translate())
-      ();
+      .translate(zoom.translate())();
 
   projection
       .scale(zoom.scale() / 2 / Math.PI)
@@ -217,7 +240,7 @@ function redraw() {
      });
 
   image.enter().append("image")
-    //  .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+     // .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       // .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       .attr("xlink:href", function(d) { return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       // .attr("xlink:href", function(d) { return "http://a.tile.cloudmade.com/API KEY HERE/998/256/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
