@@ -158,14 +158,14 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
 
   categoryKeys = _.pluck(topCategories,'key');
 
+  var allDisruptions = disruptionsByCategory.top(Infinity);
+
   markers = svg.selectAll("circle")
                     .data(data)
+                    // .data(allDisruptions)
                     .enter()
                     .append("circle")
-                    .attr("r", 5)
-                    .style("fill", "red")
-                    .attr("stroke","white")
-                    .attr("stroke-width",2);
+                    .attr("r", 5);
 
   svg.call(zoom);
   redraw();
