@@ -112,7 +112,7 @@ var zoom = d3.behavior.zoom()
     .scale(projection.scale() * 2 * Math.PI)
     .scaleExtent([1 << 11, 1 << 25])
     .translate([width - center[0], height - center[1]])
-    .on("zoom", redraw);
+    .on("zoom", redrawMap);
 
 var svg = d3.select("#map").append("svg")
             .attr("height", height);
@@ -144,8 +144,6 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
 
   // Crossfilter tests
   disruptions = crossfilter(data);
-  // console.log(JSON.stringify(data));
-  // xf.add(data);
 
   // var dims ={
   //   category: xf.dimension(function(d) { return d.category; })
@@ -168,7 +166,7 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
                     .attr("r", 5);
 
   svg.call(zoom);
-  redraw();
+  redrawMap();
 
   // Dropdown menu
   var select = messageboard.append('select');
@@ -182,6 +180,7 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
 
   select.on("change", function() {
       var categoryValue = categoryKeys[this.selectedIndex];
+      console.log(categoryValue);
       // updateXF(categoryValue);
   })
 
@@ -213,7 +212,7 @@ function renderMessageBoard() {
 
 }
 
-function redraw() {
+function redrawMap() {
   var tiles = tile
       .scale(zoom.scale())
       .translate(zoom.translate())();
@@ -252,6 +251,3 @@ function redraw() {
       .attr("y", function(d) { return d[1]; });
 
 }
-
-
-
