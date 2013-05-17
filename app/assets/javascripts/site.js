@@ -143,23 +143,20 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   console.log(data);
 
   // Crossfilter tests
-  disruptionEvents = crossfilter(data);
-  console.log(JSON.stringify(data));
+  disruptions = crossfilter(data);
+  // console.log(JSON.stringify(data));
   // xf.add(data);
-
 
   // var dims ={
   //   category: xf.dimension(function(d) { return d.category; })
   // }
 
-  var category = disruptionEvents.dimension(function(d) { return d.category; });
+  var disruptionsByCategory = disruptions.dimension(function(d) { return d.category; });
 
   // Sort category groups by number
-  categoryGroup = category.group().all().sort(function(a,b) {
-      return a.value < b.value ? 1 : -1;
-  });
+  topCategories = disruptionsByCategory.group().top(Infinity);
 
-  categoryKeys = _.pluck(categoryGroup,'key');
+  categoryKeys = _.pluck(topCategories,'key');
 
   markers = svg.selectAll("circle")
                     .data(data)
@@ -192,10 +189,15 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
 
 });
 
+function updateFilter(categoryValue) {
+    disruptionsByCategory.filter(categoryValue);
+}
+
+
 
 function renderMessageBoard() {
    var categorySel = messageboard.selectAll("g.category")
-                                .data(categoryGroup);
+                                .data(topCategories);
 
    categorySel.exit().remove();
 
