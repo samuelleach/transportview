@@ -142,36 +142,21 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   data = $.xml2json(xml).Disruptions.Disruption;
   console.log(data);
 
-  // Crossfilter tests
+  // Crossfilter
   disruptions = crossfilter(data);
-
-  // var dims ={
-  //   category: xf.dimension(function(d) { return d.category; })
-  // }
-
   disruptionsByCategory = disruptions.dimension(function(d) { return d.category; });
-
-  // Sort category groups by number
   topCategories = disruptionsByCategory.group().top(Infinity);
 
   markersSel = svg.selectAll("circle");
-
-  markersSelData = markersSel
-                    .data(data);
-
-  markers = markersSelData
-                    .enter()
-                    .append("circle")
-                    .attr("r", 5);                  
+  markersData = markersSel.data(data);
+  updateMarkers();
 
   svg.call(zoom);
   redrawMap();
 
   // Dropdown menu
   var dropdown = messageboard.append('select');
-
   categoryKeys = _.pluck(topCategories,'key');
-
 
   dropdown.selectAll("option")
           .data(categoryKeys)
@@ -182,53 +167,41 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
 
   dropdown.on("change", function() {
       var categoryKey = categoryKeys[this.selectedIndex];
-      console.log(categoryKey);
-      updateFilter(categoryKey);
+      updateMarkers(categoryKey);
+      redrawMap();
   })
 
-  messageboardSel = messageboard.selectAll("g.category")
-                                  .data(topCategories);
-
+  messageboardSel  = messageboard.selectAll("g.category");
+  messageboardData = messageboardSel.data(topCategories);
   redrawMessageBoard();
-
 });
 
-function updateFilter(categoryKey) {
+function updateMarkers(categoryKey) {
     disruptionsByCategory.filter(categoryKey);
+    selectedDisruptions = disruptionsByCategory.top(Infinity);
 
+    markersData.remove();
+    markersData = markersSel
+                    .data(selectedDisruptions);
 
-    markersSelData
-          .remove();
-
-    allDisruptions = disruptionsByCategory.top(Infinity);
-
-    markersSelData = markersSel
-                    .data(allDisruptions);
-
-    markers = markersSelData
-                      .enter()
-                      .append("circle")
-                      .attr("r", 5);
-
-
-    redrawMap();
+    markers = markersData
+                   .enter()
+                   .append("circle");
 }
 
-
-
 function redrawMessageBoard() {
-   messageboardSel.exit().remove();
+   messageboardData.remove();
 
-   var messageboardEnter = messageboardSel.enter()
-                                  .append("g")
-                                  .classed("category", true);
+   messageboardData = messageboardSel.data(topCategories);
 
-   messageboardEnter.append("text").classed("name", true);
+   var messageboardEnter = messageboardData.enter()
+                                       .append("g")
+                                       .classed("category", true)
+                                       .append("text")
+                                       .classed("name", true);
 
-
-   messageboardSel.select("text.name")
+   messageboardData.select("text.name")
               .text(function(d) { return d.key+' '+ d.value + '; ' });
-
 }
 
 function redrawMap() {
@@ -252,6 +225,7 @@ function redrawMap() {
       .remove();
 
   markers
+     .attr("r", 5)
      .attr("cx", function(d) {
              return projection(lonlat(d))[0];
      })
@@ -260,7 +234,7 @@ function redrawMap() {
      });
 
   image.enter().append("image")
-     // .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+      // .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       // .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       .attr("xlink:href", function(d) { return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       // .attr("xlink:href", function(d) { return "http://a.tile.cloudmade.com/API KEY HERE/998/256/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
