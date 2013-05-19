@@ -120,8 +120,8 @@ var svg = d3.select("#map").append("svg")
 
 var messageboard = d3.select("#messageboard");
 
-
 var raster = svg.append("g");
+
 var vector = svg.append("path");
 
 // function lonlat(d) {
@@ -173,6 +173,7 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   })
 
   tooltipSel = d3.select('#tooltip');
+;
 
   messageboardSel  = messageboard.selectAll("g.category");
   messageboardData = messageboardSel.data(topCategories);
@@ -247,10 +248,9 @@ function markerMouseOut() {
 }
 
 var mouseMoveFunction = function() {
-  var coord = d3.mouse(this)
   tooltipSel
-    .style("left", coord[0] + 205  + "px" )
-    .style("top", coord[1] + 30 + "px");
+    .style("left", (d3.event.pageX + 30) + "px")     
+    .style("top", (d3.event.pageY - 30) + "px");  
 }
 
 function redrawMap() {
