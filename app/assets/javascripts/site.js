@@ -148,6 +148,7 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   topCategories = disruptionsByCategory.group().top(Infinity);
 
   markersSel = svg.selectAll("circle");
+
   markersData = markersSel.data(data);
   updateMarkers();
 
@@ -171,6 +172,8 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
       redrawMap();
   })
 
+  tooltipSel = d3.select('#tooltip');
+
   messageboardSel  = messageboard.selectAll("g.category");
   messageboardData = messageboardSel.data(topCategories);
   redrawMessageBoard();
@@ -186,7 +189,13 @@ function updateMarkers(categoryKey) {
 
     markers = markersData
                    .enter()
-                   .append("circle");
+                   .append("circle")
+                   .attr("r", 5);
+
+    markers
+        .on("mouseover", markerMouseOver)
+        .on("mouseout", markerMouseOut)
+        .on('mousemove', mouseMoveFunction);
 }
 
 function redrawMessageBoard() {
@@ -202,6 +211,46 @@ function redrawMessageBoard() {
 
    messageboardData.select("text.name")
               .text(function(d) { return d.key+' '+ d.value + '; ' });
+}
+
+function markerMouseOver(d) {
+  console.log(d);
+
+  tooltipSel
+      .classed("hidden", false)
+      .select("p")
+      .text(d.comments)
+      .style("opacity", 0.0)
+      .transition().duration(500)
+      .style("opacity", 1.0);
+
+  var thisMarker = d3.select(this);
+
+  thisMarker
+    .transition()
+    .attr("r", 10)
+    .duration(500);
+}
+
+function markerMouseOut() {
+  console.log('mouseout');
+
+  tooltipSel
+    .classed("hidden", true);
+
+  var thisMarker = d3.select(this);
+  thisMarker
+        .transition()
+        .attr("r", 5)
+        .duration(500);
+
+}
+
+var mouseMoveFunction = function() {
+  var coord = d3.mouse(this)
+  tooltipSel
+    .style("left", coord[0] + 205  + "px" )
+    .style("top", coord[1] + 30 + "px");
 }
 
 function redrawMap() {
@@ -225,21 +274,16 @@ function redrawMap() {
       .remove();
 
   markers
-     .attr("r", 5)
-     .attr("cx", function(d) {
-             return projection(lonlat(d))[0];
-     })
-     .attr("cy", function(d) {
-             return projection(lonlat(d))[1];
-     });
+     .attr("cx", function(d) { return projection(lonlat(d))[0]; })
+     .attr("cy", function(d) { return projection(lonlat(d))[1]; });
 
   image.enter().append("image")
       // .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-vyofok3q/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       // .attr("xlink:href", function(d) { return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       .attr("xlink:href", function(d) { return "http://a.tile.stamen.com/toner/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
       // .attr("xlink:href", function(d) { return "http://a.tile.cloudmade.com/API KEY HERE/998/256/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
-      .attr("width", 1)
-      .attr("height", 1)
+      .attr("width", 1.0)
+      .attr("height", 1.0)
       .attr("x", function(d) { return d[0]; })
       .attr("y", function(d) { return d[1]; });
 
