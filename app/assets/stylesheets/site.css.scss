@@ -7,6 +7,7 @@
 
 body {
   background-color: #252525;
+  color: white;
 }
 
 .category {
@@ -26,13 +27,67 @@ circle {
         position: absolute;
         width: 175px;
         padding: 10px;
-        background-color: rgba(255,255,255,.75);
+        background-color: rgba(255,255,255,1.0);
         border-radius: 6px;
         -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
         -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
         box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        color: black;
 }
 
 #tooltip.hidden {
   display: none;
 }
+
+.background.bar {
+  fill: #ccc;
+}
+
+.foreground.bar {
+  fill: steelblue;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #FFF;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font: 10px sans-serif;
+  fill: white;
+}
+
+.brush rect.extent {
+  fill: steelblue;
+  fill-opacity: .125;
+}
+
+.brush .resize path {
+  fill: #eee;
+  stroke: #666;
+}
+
+.reset {
+  padding-left: 1em;
+  font-size: smaller;
+  color: #ccc;
+}
+
+#hour-chart {
+  width: 260px;
+}
+
+#date-chart {
+  width: 800px;
+}
+
+#totals {
+  // position: absolute;
+  // position: relative;
+  // left: 940px;
+  font-size: smaller;
+  // float: right;
+  // width: 220px;
+}
+
