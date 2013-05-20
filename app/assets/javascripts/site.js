@@ -153,10 +153,15 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   });  
 
   // Crossfilter
+  // weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
   disruption = crossfilter(disruptions);
   all = disruption.groupAll();
   category = disruption.dimension(function(d) { return d.category; });
   categories = category.group();
+  day = disruption.dimension(function(d) { return d.startTime.getDay(); });
+  // day = disruption.dimension(function(d) { return weekday[d.startTime.getDay()]; });
+  days = day.group();
+  // console.log(days.top(Infinity));
   date = disruption.dimension(function(d) { return d.startTime; });
   dates = date.group(d3.time.day);
   hour = disruption.dimension(function(d) { return d.startTime.getHours() + d.startTime.getMinutes() / 60; }),
@@ -179,6 +184,13 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
         .x(d3.scale.linear()
           .domain([0, 24])
           .rangeRound([0, 10 * 24])),
+
+      barChart()
+          .dimension(day)
+          .group(days)
+        .x(d3.scale.linear()
+          .domain([0, 7])
+          .rangeRound([0, 10 * 7])),
 
       barChart()
           .dimension(date)
