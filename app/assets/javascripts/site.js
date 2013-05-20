@@ -139,17 +139,32 @@ function lonlat(d) {
     return d.CauseArea.DisplayPoint.Point.coordinatesLL.split(',');
 }
 d3.xml("data/stream.xml", "application/xml", function(error, xml) {
-  data = $.xml2json(xml).Disruptions.Disruption;
-  console.log(data);
+  disruptions = $.xml2json(xml).Disruptions.Disruption;
+  console.log(disruptions);
+
+
+  // Reform times into ISO8601
+  var dateFormat = d3.time.format("%Y-%m-%dT%H:%M:%SZ");
+  disruptions.forEach(function(d, i) {
+      d.index = i;
+      d.startTime = dateFormat.parse(d.startTime);
+      d.lastModTime = dateFormat.parse(d.lastModTime);
+      // d.remarkTime = dateFormat.parse(d.remarkTime); // Problems with this field
+  });  
 
   // Crossfilter
-  disruptions = crossfilter(data);
-  disruptionsByCategory = disruptions.dimension(function(d) { return d.category; });
-  topCategories = disruptionsByCategory.group().top(Infinity);
+  disruption = crossfilter(disruptions);
+  category = disruption.dimension(function(d) { return d.category; });
+  categories = category.group();
+  date = disruption.dimension(function(d) { return d.startTime; });
+  dates = date.group(d3.time.day);
+  hour = disruption.dimension(function(d) { return d.startTime.getHours() + d.startTime.getMinutes() / 60; }),
+  hours = hour.group(Math.floor);
+
+  topCategories = categories.top(Infinity);
 
   markersSel = svg.selectAll("circle");
-
-  markersData = markersSel.data(data);
+  markersData = markersSel.data(disruptions);
   updateMarkers();
 
   svg.call(zoom);
@@ -173,7 +188,6 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   })
 
   tooltipSel = d3.select('#tooltip');
-;
 
   messageboardSel  = messageboard.selectAll("g.category");
   messageboardData = messageboardSel.data(topCategories);
@@ -181,12 +195,11 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
 });
 
 function updateMarkers(categoryKey) {
-    disruptionsByCategory.filter(categoryKey);
-    selectedDisruptions = disruptionsByCategory.top(Infinity);
+    category.filter(categoryKey);
 
     markersData.remove();
     markersData = markersSel
-                    .data(selectedDisruptions);
+                    .data(category.top(Infinity));
 
     markers = markersData
                    .enter()
