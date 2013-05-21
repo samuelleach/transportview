@@ -136,7 +136,7 @@ var vector = svg.append("path");
 //   data = data.features;
 
 function lonlat(d) {
-    return d.CauseArea.DisplayPoint.Point.coordinatesLL.split(',');
+    return d.CauseArea.DisplayPoint.Point.coordinatesLL.split(',').map(Number);
 }
 d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   disruptions = $.xml2json(xml).Disruptions.Disruption;
@@ -159,13 +159,16 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   category = disruption.dimension(function(d) { return d.category; });
   categories = category.group();
   day = disruption.dimension(function(d) { return d.startTime.getDay(); });
-  // day = disruption.dimension(function(d) { return weekday[d.startTime.getDay()]; });
   days = day.group();
-  // console.log(days.top(Infinity));
   date = disruption.dimension(function(d) { return d.startTime; });
   dates = date.group(d3.time.day);
   hour = disruption.dimension(function(d) { return d.startTime.getHours() + d.startTime.getMinutes() / 60; }),
   hours = hour.group(Math.floor);
+  distance = disruption.dimension(function(d) {
+                                          var thislonlat = lonlat(d);
+                                          var thisdistance = distance(thislonlat[1],thislonlat[0],london_coord[1],london_coord[0],'M');
+                                          return thisdistance; });
+  distances = distance.group();
 
   topCategories = categories.top(Infinity);
 
@@ -193,6 +196,13 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
         .x(d3.scale.linear()
           .domain([0, 24])
           .rangeRound([0, 10 * 24])),
+
+      barChart()
+          .dimension(distance)
+          .group(distances)
+        .x(d3.scale.linear()
+          .domain([0, 20])             // Tuned by hand 
+          .rangeRound([0, 10 * 20])),  // Tuned by hand 
 
       barChart()
           .dimension(day)
