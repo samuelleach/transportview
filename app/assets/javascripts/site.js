@@ -178,6 +178,15 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   svg.call(zoom);
 
   var charts = [
+
+      barChart()
+          .dimension(date)
+          .group(dates)
+          .round(d3.time.day.round)
+        .x(d3.time.scale()
+          .domain([new Date(2012, 11, 1), new Date(2013, 8, 1)]) // Tuned by hand
+          .rangeRound([0, 10 * 90])),
+           
       barChart()
           .dimension(hour)
           .group(hours)
@@ -190,15 +199,7 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
           .group(days)
         .x(d3.scale.linear()
           .domain([0, 7])
-          .rangeRound([0, 10 * 7])),
-
-      barChart()
-          .dimension(date)
-          .group(dates)
-          .round(d3.time.day.round)
-        .x(d3.time.scale()
-          .domain([new Date(2012, 11, 1), new Date(2013, 10, 1)]) // Tuned by hand
-          .rangeRound([0, 10 * 90]))
+          .rangeRound([0, 10 * 7]))
     ];
 
   // Given our array of charts, which we assume are in the same order as the

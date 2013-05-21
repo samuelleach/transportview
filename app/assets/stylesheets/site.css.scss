@@ -75,11 +75,17 @@ circle {
 }
 
 #hour-chart {
-  width: 260px;
+  float: left;
+  padding: 0 20px 0 20px;
+}
+
+#day-chart {
+  float: left;
+  padding: 0 20px 0 20px;
 }
 
 #date-chart {
-  width: 800px;
+  padding: 0 20px 0 20px;
 }
 
 #totals {
