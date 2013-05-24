@@ -122,7 +122,8 @@ var messageboard = d3.select("#messageboard");
 
 var raster = svg.append("g");
 
-var vector = svg.append("path");
+var vector = svg.append("path")
+                  .classed("boundary", true);
 
 // function lonlat(d) {
 //     return [d.lon, d.lat];
