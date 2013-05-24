@@ -325,11 +325,11 @@ function redrawMessageBoard() {
 function markerMouseOver(d) {
   tooltipSel
       .classed("hidden", false)
-      .select("p")
-      .text(d.comments)
       .style("opacity", 0.0)
       .transition().duration(500)
-      .style("opacity", 1.0);
+      .style("opacity", 1.0)
+      .select("p")
+      .text(d.comments);
 
   var thisMarker = d3.select(this);
 
