@@ -152,6 +152,20 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
       // d.remarkTime = dateFormat.parse(d.remarkTime); // Problems with this field
   });  
 
+
+  d3.json("/data/uk.json", function(error, uk) {
+    // svg.call(zoom);
+    vector.datum(topojson.feature(uk, uk.objects.subunits));
+    // redrawMap();
+  });
+
+  // d3.json("/data/us.json", function(error, us) {
+  //   svg.call(zoom);
+  //   vector.datum(topojson.mesh(us, us.objects.states));
+  //   redrawMap();
+  // });
+
+
   // Crossfilter
   // weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
   disruption = crossfilter(disruptions);
