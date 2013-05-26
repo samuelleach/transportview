@@ -139,10 +139,17 @@ var vector = svg.append("path")
 function lonlat(d) {
     return d.CauseArea.DisplayPoint.Point.coordinatesLL.split(',').map(Number);
 }
-d3.xml("data/stream.xml", "application/xml", function(error, xml) {
-  disruptions = $.xml2json(xml).Disruptions.Disruption;
-  console.log(disruptions);
 
+queue()
+    .defer(d3.xml, "data/stream.xml", "application/xml")
+    .defer(d3.json, "/data/inner-london.json")
+    .defer(d3.json, "/data/uk.json")
+    .await(ready);
+
+function ready(error, xml, innerlondon, uk) {
+  disruptions = $.xml2json(xml).Disruptions.Disruption;
+  vector.datum(topojson.feature(innerlondon, innerlondon.objects["inner-london"]));
+  vector.datum(topojson.feature(uk, uk.objects.subunits));
 
   // Reform times into ISO8601
   var dateFormat = d3.time.format("%Y-%m-%dT%H:%M:%SZ");
@@ -154,21 +161,7 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   });  
 
 
-  d3.json("/data/uk.json", function(error, uk) {
-    // svg.call(zoom);
-    vector.datum(topojson.feature(uk, uk.objects.subunits));
-    // redrawMap();
-  });
-
-  // d3.json("/data/us.json", function(error, us) {
-  //   svg.call(zoom);
-  //   vector.datum(topojson.mesh(us, us.objects.states));
-  //   redrawMap();
-  // });
-
-
   // Crossfilter
-  // weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
   disruption = crossfilter(disruptions);
   all = disruption.groupAll();
   category = disruption.dimension(function(d) { return d.category; });
@@ -289,7 +282,7 @@ d3.xml("data/stream.xml", "application/xml", function(error, xml) {
   // messageboardSel  = messageboard.selectAll("g.category");
   // messageboardData = messageboardSel.data(topCategories);
   // redrawMessageBoard();
-});
+};
 
 function updateMarkers() {
     markersData.remove();
