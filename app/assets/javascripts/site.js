@@ -139,18 +139,24 @@ var vector2 = svg.append("path")
 // d3.json("data/tfl_stationlocations.geo.json", function(error, data) {
 //   data = data.features;
 
+// function lonlat(d) {
+//     return d.CauseArea.DisplayPoint.Point.coordinatesLL.split(',').map(Number);
+// }
+
 function lonlat(d) {
-    return d.CauseArea.DisplayPoint.Point.coordinatesLL.split(',').map(Number);
+  return [d.lon, d.lat];
 }
 
 queue()
-    .defer(d3.xml, "data/stream.xml", "application/xml")
+    // .defer(d3.xml, "data/stream.xml", "application/xml")
+    .defer(d3.json, "/disruptions.json")
     .defer(d3.json, "/data/inner-london.json")
     .defer(d3.json, "/data/uk.json")
     .await(ready);
 
-function ready(error, xml, innerlondon, uk) {
-  disruptions = $.xml2json(xml).Disruptions.Disruption;
+// function ready(error, xml, innerlondon, uk) {
+  // disruptions = $.xml2json(xml).Disruptions.Disruption;
+  function ready(error, disruptions, innerlondon, uk) {
   vector1.datum(topojson.feature(innerlondon, innerlondon.objects["inner-london"]));
   vector2.datum(topojson.feature(uk, uk.objects.subunits));
 
