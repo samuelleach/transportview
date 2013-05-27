@@ -78,3 +78,9 @@ test:
         # low amounts for fast failures.
         max_retries: 1
         retry_interval: 0
+
+# Following instructions from https://devcenter.heroku.com/articles/mongohq
+production:
+  sessions:
+    default:
+      uri: <%= ENV['MONGOHQ_URL'] %>
