@@ -37,6 +37,7 @@ gem 'jquery-rails'
 gem 'mongoid'
 gem 'resque'
 gem 'rabl'
+gem 'oj'
 gem 'nokogiri'
 
 # To use ActiveModel has_secure_password

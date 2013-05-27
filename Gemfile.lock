@@ -91,6 +91,7 @@ GEM
     moped (1.4.5)
     multi_json (1.7.3)
     nokogiri (1.5.9)
+    oj (2.0.14)
     origin (1.1.0)
     polyglot (0.3.3)
     pry (0.9.12.1)
@@ -191,6 +192,7 @@ DEPENDENCIES
   meta_request
   mongoid
   nokogiri
+  oj
   rabl
   rails (= 3.2.13)
   resque
