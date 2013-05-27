@@ -1,5 +1,7 @@
 Transportview::Application.routes.draw do
 
+  get "disruptions/show"
+
   get "site/index"
 
   root :to => 'site#index'
