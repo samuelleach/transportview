@@ -122,7 +122,10 @@ var messageboard = d3.select("#messageboard");
 
 var raster = svg.append("g");
 
-var vector = svg.append("path")
+var vector1 = svg.append("path")
+                  .classed("boundary", true);
+
+var vector2 = svg.append("path")
                   .classed("boundary", true);
 
 // function lonlat(d) {
@@ -148,8 +151,8 @@ queue()
 
 function ready(error, xml, innerlondon, uk) {
   disruptions = $.xml2json(xml).Disruptions.Disruption;
-  vector.datum(topojson.feature(innerlondon, innerlondon.objects["inner-london"]));
-  vector.datum(topojson.feature(uk, uk.objects.subunits));
+  vector1.datum(topojson.feature(innerlondon, innerlondon.objects["inner-london"]));
+  vector2.datum(topojson.feature(uk, uk.objects.subunits));
 
   // Reform times into ISO8601
   var dateFormat = d3.time.format("%Y-%m-%dT%H:%M:%SZ");
@@ -358,7 +361,10 @@ function redrawMap() {
       .scale(zoom.scale() / 2 / Math.PI)
       .translate(zoom.translate());
 
-  vector
+  vector1
+      .attr("d", path);
+
+  vector2
       .attr("d", path);
 
   var image = raster
