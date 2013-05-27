@@ -17,5 +17,6 @@ data['Root']['Disruptions']['Disruption'].each do |disruption|
 	Disruption.create(lon: lonlat[0], lat: lonlat[1],
 					  startTime: disruption['startTime'],
 					  lastModTime: disruption['lastModTime'],
-					  comments: disruption['comments'])
+					  comments: disruption['comments'],
+					  category: disruption['category'])
 end	

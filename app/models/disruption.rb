@@ -5,4 +5,5 @@ class Disruption
   field :startTime, type: String
   field :lastModTime, type: String
   field :comments, type: String
+  field :category, type: String
 end
