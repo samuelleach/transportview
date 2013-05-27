@@ -91,7 +91,8 @@
 
 // Pure d3 example
 
-var width = self.innerWidth, 
+// var width = self.innerWidth, 
+var width = 970, 
     height = 500;
 
 var tile = d3.geo.tile()
@@ -115,8 +116,8 @@ var zoom = d3.behavior.zoom()
     .on("zoom", redrawMap);
 
 var svg = d3.select("#map").append("svg")
-            .attr("height", height);
-            // .attr("width", width);
+            .attr("height", height)
+            .attr("width", width);
 
 var messageboard = d3.select("#messageboard");
 
