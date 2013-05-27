@@ -115,6 +115,10 @@ var zoom = d3.behavior.zoom()
     .translate([width - center[0], height - center[1]])
     .on("zoom", redrawMap);
 
+var mapSel = d3.select("#map")
+                  .attr("height", height)
+                  .attr("width", width);
+
 var svg = d3.select("#map").append("svg")
             .attr("height", height)
             .attr("width", width);
