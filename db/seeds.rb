@@ -5,3 +5,17 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+f = File.open("public/data/stream.xml")
+doc = Nokogiri::XML(f)
+f.close
+
+data = Hash.from_xml(doc.to_s)
+
+data['Root']['Disruptions']['Disruption'].each do |disruption|
+	lonlat = disruption["CauseArea"]["DisplayPoint"]["Point"]["coordinatesLL"].split(',')
+	Disruption.create(lon: lonlat[0], lat: lonlat[1],
+					  startTime: disruption['startTime'],
+					  lastModTime: disruption['lastModTime'],
+					  comments: disruption['comments'])
+end	
