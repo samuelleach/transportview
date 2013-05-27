@@ -1,0 +1,31 @@
+<h1>Listing disruptions</h1>
+
+<table>
+  <tr>
+    <th>Lon</th>
+    <th>Lat</th>
+    <th>Starttime</th>
+    <th>Lastmodtime</th>
+    <th>Comments</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @disruptions.each do |disruption| %>
+  <tr>
+    <td><%= disruption.lon %></td>
+    <td><%= disruption.lat %></td>
+    <td><%= disruption.startTime %></td>
+    <td><%= disruption.lastModTime %></td>
+    <td><%= disruption.comments %></td>
+    <td><%= link_to 'Show', disruption %></td>
+    <td><%= link_to 'Edit', edit_disruption_path(disruption) %></td>
+    <td><%= link_to 'Destroy', disruption, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Disruption', new_disruption_path %>

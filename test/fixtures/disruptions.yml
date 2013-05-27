@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  lon: 1.5
+  lat: 1.5
+  startTime: MyString
+  lastModTime: MyString
+  comments: MyText
+
+two:
+  lon: 1.5
+  lat: 1.5
+  startTime: MyString
+  lastModTime: MyString
+  comments: MyText

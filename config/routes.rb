@@ -1,5 +1,8 @@
 Transportview::Application.routes.draw do
 
+  resources :disruptions
+
+
   get "disruptions/show"
 
   get "site/index"
