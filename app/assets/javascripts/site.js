@@ -180,6 +180,8 @@ queue()
   all = disruption.groupAll();
   category = disruption.dimension(function(d) { return d.category; });
   categories = category.group();
+  mystatus = disruption.dimension(function(d) { return d.status; });
+  statuses = mystatus.group();
   day = disruption.dimension(function(d) { return d.startTime.getDay(); });
   days = day.group();
   date = disruption.dimension(function(d) { return d.startTime; });
@@ -193,6 +195,7 @@ queue()
   distances = distance.group();
 
   topCategories = categories.top(Infinity);
+  topStatuses = statuses.top(Infinity);
 
   markersSel = svg.selectAll("circle");
   markersData = markersSel.data(disruptions);
@@ -272,24 +275,44 @@ queue()
     renderAll();
   };
 
-  // Dropdown menu
-  var dropdown = messageboard.append('select');
+  // Categories dropdown menu
+  var categoryDropdown = messageboard.append('select');
   categoryKeys = _.pluck(topCategories,'key');
 
-  dropdown.selectAll("option")
+  categoryDropdown.selectAll("option")
           .data(categoryKeys)
           .enter()
           .append("option")
           .attr("value", function(d) { return d })
           .text(function(d) { return d });
 
-  dropdown.on("change", function() {
-      var categoryKey = categoryKeys[this.selectedIndex];
-      category.filter(categoryKey);
-      updateMarkers(categoryKey);
+  categoryDropdown.on("change", function() {
+      var selectedKey = categoryKeys[this.selectedIndex];
+      category.filter(selectedKey);
+      updateMarkers(selectedKey);
       renderAll();
       redrawMap();
   })
+
+  // Status dropdown menu
+  var statusDropdown = messageboard.append('select');
+  statusKeys = _.pluck(topStatuses,'key');
+
+  statusDropdown.selectAll("option")
+          .data(statusKeys)
+          .enter()
+          .append("option")
+          .attr("value", function(d) { return d })
+          .text(function(d) { return d });
+
+  statusDropdown.on("change", function() {
+      var selectedKey = statusKeys[this.selectedIndex];
+      mystatus.filter(selectedKey);
+      updateMarkers(selectedKey);
+      renderAll();
+      redrawMap();
+  })
+
 
   tooltipSel = d3.select('#tooltip');
 
