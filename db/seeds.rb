@@ -16,7 +16,9 @@ data['Root']['Disruptions']['Disruption'].each do |disruption|
 	lonlat = disruption["CauseArea"]["DisplayPoint"]["Point"]["coordinatesLL"].split(',')
 	Disruption.create(lon: lonlat[0], lat: lonlat[1],
 					  startTime: disruption['startTime'],
+					  endTime: disruption['endTime'],
 					  lastModTime: disruption['lastModTime'],
 					  comments: disruption['comments'],
-					  category: disruption['category'])
+					  category: disruption['category'],
+					  status: disruption['status'])
 end	
