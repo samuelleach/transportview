@@ -6,7 +6,8 @@ class DisruptionsController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @disruptions }
+      # format.json { render json: @disruptions }
+      format.json # index.json.rabl
     end
   end
 
