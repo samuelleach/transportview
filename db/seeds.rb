@@ -21,5 +21,6 @@ data['Root']['Disruptions']['Disruption'].each do |disruption|
 					  comments: disruption['comments'],
 					  category: disruption['category'],
 					  subCategory: disruption['subCategory'],
-					  status: disruption['status'])
+					  status: disruption['status'],
+					  tfl_id: disruption['id'])
 end	

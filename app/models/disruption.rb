@@ -9,4 +9,5 @@ class Disruption
   field :subCategory, type: String
   field :category, type: String
   field :status, type: String
+  field :tfl_id, type: Integer
 end
