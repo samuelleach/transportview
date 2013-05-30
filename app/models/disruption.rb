@@ -6,6 +6,7 @@ class Disruption
   field :endTime, type: String
   field :lastModTime, type: String
   field :comments, type: String
+  field :subCategory, type: String
   field :category, type: String
   field :status, type: String
 end

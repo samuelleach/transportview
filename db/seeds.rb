@@ -20,5 +20,6 @@ data['Root']['Disruptions']['Disruption'].each do |disruption|
 					  lastModTime: disruption['lastModTime'],
 					  comments: disruption['comments'],
 					  category: disruption['category'],
+					  subCategory: disruption['subCategory'],
 					  status: disruption['status'])
 end	
