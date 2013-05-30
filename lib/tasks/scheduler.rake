@@ -9,7 +9,7 @@ task :update_disruptions => :environment do
   	if response.code == 200
 	  	puts 'Converting data to string'
 	  	data_string = response.body.to_s
-	  	if data_string != nil
+	  	if data_string != ''
 		  	puts 'Converting string to hash'
 		  	data = Hash.from_xml(data_string)
 
@@ -29,7 +29,7 @@ task :update_disruptions => :environment do
 
 				doc.save
 			end
+			puts "done."
 		end
-	  	puts "done."
   	end
 end
