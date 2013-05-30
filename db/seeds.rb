@@ -12,9 +12,10 @@ f.close
 
 data = Hash.from_xml(doc.to_s)
 
+Disruption.delete_all
 data['Root']['Disruptions']['Disruption'].each do |disruption|
 	lonlat = disruption["CauseArea"]["DisplayPoint"]["Point"]["coordinatesLL"].split(',')
-	Disruption.create(lon: lonlat[0], lat: lonlat[1],
+	doc = Disruption.new(lon: lonlat[0], lat: lonlat[1],
 					  startTime: disruption['startTime'],
 					  endTime: disruption['endTime'],
 					  lastModTime: disruption['lastModTime'],
@@ -23,4 +24,6 @@ data['Root']['Disruptions']['Disruption'].each do |disruption|
 					  subCategory: disruption['subCategory'],
 					  status: disruption['status'],
 					  tfl_id: disruption['id'])
+
+	doc.save
 end	
